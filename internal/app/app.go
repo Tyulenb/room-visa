@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"room-visa/internal/middlerware"
 	"room-visa/internal/transport/handlers"
 )
 
@@ -28,7 +29,7 @@ func (a *App) Run() error {
 
     server := &http.Server{
         Addr: a.Addr,
-        Handler: router,
+        Handler: middlerware.Logging(router),
     }
 
     log.Printf("Server is started on port: %s", a.Addr) 
