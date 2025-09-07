@@ -23,6 +23,8 @@ func (a *App) Run() error {
     router := http.NewServeMux()
     userHandler := handlers.NewUserHandler("")
     userHandler.RegisterRoutes(router)
+    adminHandler := handlers.NewAdminHandler("")
+    adminHandler.RegisterRoutes(router)
 
     server := &http.Server{
         Addr: a.Addr,

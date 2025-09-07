@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+    <html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аутентификация админа</title>
+</head>
+<body>
+    <h1>Авторизация</h1>
+    <form action="/auth" method="post">
+        <label for="name">Логин</label><br>
+        <input type="text" id="login" name="login" required><br><br>
+
+        <label for="surname">Пароль</label><br>
+        <input type="text" id="password" name="password" required><br><br>
+
+        <button type="submit">Войти</button>
+    </form>
+</body>
+</html>
