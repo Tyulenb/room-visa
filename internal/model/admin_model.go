@@ -6,7 +6,7 @@ type Admin struct {
 }
 
 type AdminService interface {
-    CheckPassword(password string) error
+    CheckPassword(login, password string) error
 
 }
 
