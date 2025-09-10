@@ -5,16 +5,18 @@ import (
 	"io"
 	"net/http"
 	"path/filepath"
+	"room-visa/internal/model"
+	"room-visa/internal/transport/utils"
 	"strings"
 )
 
 type AdminHandler struct {
-    us any
+    as model.AdminService
 }
 
-func NewAdminHandler(us any) *AdminHandler {
+func NewAdminHandler(as model.AdminService) *AdminHandler {
     return &AdminHandler{
-        us: us,
+        as: as,
     }
 }
 
@@ -47,5 +49,19 @@ func (a *AdminHandler) authAdmin(w http.ResponseWriter, r *http.Request) {
     bodySplit := strings.Split(string(body), "&")
     login := strings.Split(bodySplit[0], "=")[1]
     password := strings.Split(bodySplit[1], "=")[1]
-    fmt.Fprintf(w, "Login: %s, Password: %s", login, password)
+
+
+    err = a.as.CheckPassword(login, password)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusBadGateway)
+        return
+    }
+
+    token, err := utils.GenerateToken()
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusBadGateway)
+        return
+    }
+
+    fmt.Fprintf(w, "Login: %s, Password: %s, Token: %s", login, password, token)
 }
