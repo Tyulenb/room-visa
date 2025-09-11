@@ -11,5 +11,5 @@ type AdminService interface {
 }
 
 type AdminRepository interface {
-    SelectAdminByLogin(login string) (Admin, error)
+    SelectAdminByLogin(login string) (*Admin, error)
 }
