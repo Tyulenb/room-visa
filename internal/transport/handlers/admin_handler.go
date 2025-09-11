@@ -23,6 +23,7 @@ func NewAdminHandler(as model.AdminService) *AdminHandler {
 func (a *AdminHandler) RegisterRoutes(router *http.ServeMux) {
     router.HandleFunc("GET /auth",a.adminAuthPage)
     router.HandleFunc("POST /auth",a.authAdmin)
+    router.HandleFunc("POST /addAdmin",a.addAdmin)
 }
 
 //Sends admin auth page
@@ -64,4 +65,23 @@ func (a *AdminHandler) authAdmin(w http.ResponseWriter, r *http.Request) {
     }
 
     fmt.Fprintf(w, "Login: %s, Password: %s, Token: %s", login, password, token)
+}
+
+func (a *AdminHandler) addAdmin(w http.ResponseWriter, r *http.Request) {
+    admin := new(model.Admin)
+    if err := utils.ParseJSON(r, admin); err != nil {
+        http.Error(w, err.Error(), http.StatusBadGateway)
+        return
+    }
+    
+    adm, err := a.as.CreateAdmin(admin.Login, admin.Password)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusBadGateway)
+        return
+    }
+   
+    if err := utils.WriteJSON(w, http.StatusOK, adm); err != nil {
+        http.Error(w, err.Error(), http.StatusBadGateway)
+        return
+    }
 }

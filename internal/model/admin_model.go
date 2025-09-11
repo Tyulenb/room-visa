@@ -7,9 +7,10 @@ type Admin struct {
 
 type AdminService interface {
     CheckPassword(login, password string) error
-
+    CreateAdmin(login, password string) (*Admin, error)
 }
 
 type AdminRepository interface {
     SelectAdminByLogin(login string) (*Admin, error)
+    InsertAdmin(login, password string) (*Admin, error)
 }

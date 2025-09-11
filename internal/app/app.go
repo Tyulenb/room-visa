@@ -4,7 +4,9 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"room-visa/internal/database"
 	"room-visa/internal/middlerware"
+	"room-visa/internal/service"
 	"room-visa/internal/transport/handlers"
 )
 
@@ -24,7 +26,10 @@ func (a *App) Run() error {
     router := http.NewServeMux()
     userHandler := handlers.NewUserHandler("")
     userHandler.RegisterRoutes(router)
-    adminHandler := handlers.NewAdminHandler("")
+
+    adminRepository := database.NewAdminRepository(a.DB)
+    adminService := service.NewAdminService(adminRepository)
+    adminHandler := handlers.NewAdminHandler(adminService)
     adminHandler.RegisterRoutes(router)
 
     server := &http.Server{
