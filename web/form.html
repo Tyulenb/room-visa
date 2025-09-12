@@ -14,8 +14,26 @@
         <label for="surname">Фамилия:</label><br>
         <input type="text" id="surname" name="surname" required><br><br>
 
-        <label for="email">Электронная почта:</label><br>
-        <input type="email" id="email" name="email" required><br><br>
+        <label for="sex">Пол</label><br>
+        <select id="sex" name="sex">
+            <option value="male">Мужчина</option>
+            <option value="female">Женщина</option>
+        </select>
+        <br><br>
+
+        <label for="ethnicity">Этничность</label><br>
+        <input type="text" id="ethnicity" name="ethnicity" required><br><br>
+
+        <label for="citizenship">Гражданство</label><br>
+        <input type="text" id="citizenship" name="citizenship" required><br><br>
+
+        <label for="purpose">Цель визита</label><br>
+        <input type="text" id="purpose" name="purpose" required><br><br>
+
+        <label for="photo">Фотография лица</label>
+        <br>
+        <input type="file" id="photo" name="photo" accept=".jpg, .jpeg, .png" required>
+        <br><br>
 
         <button type="submit">Отправить</button>
     </form>
