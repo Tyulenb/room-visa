@@ -2,12 +2,10 @@ package handlers
 
 import (
 	"fmt"
-	"io"
 	"net/http"
 	"path/filepath"
 	"room-visa/internal/model"
 	"room-visa/internal/transport/utils"
-	"strings"
 )
 
 type AdminHandler struct {
@@ -38,21 +36,9 @@ func (a *AdminHandler) adminAuthPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *AdminHandler) authAdmin(w http.ResponseWriter, r *http.Request) {
-    body, err := io.ReadAll(r.Body)
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusBadGateway)
-        return
-    }
-    defer r.Body.Close()
+    login, password := r.FormValue("login"), r.FormValue("password")
 
-    //Form in body retruns in format 'login=...&password=...' 
-    //We need to split it to get login and password
-    bodySplit := strings.Split(string(body), "&")
-    login := strings.Split(bodySplit[0], "=")[1]
-    password := strings.Split(bodySplit[1], "=")[1]
-
-
-    err = a.as.CheckPassword(login, password)
+    err := a.as.CheckPassword(login, password)
     if err != nil {
         http.Error(w, err.Error(), http.StatusBadGateway)
         return
