@@ -24,7 +24,9 @@ func main() {
 
     connStr := os.Getenv("DB")
     db, err := sql.Open("postgres", connStr)
-    dbPing(db)
+    if err := dbPing(db); err != nil {
+        log.Fatalf("Database is unavailable, err:%v", err)
+    }
 
     app := app.NewApp(":3456", db)
     app.Run()

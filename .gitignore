@@ -3,3 +3,4 @@
 *.yaml
 *.env
 .exe
+room-visa/storage/
