@@ -2,12 +2,13 @@ package storage
 
 import (
 	"io"
+	"mime/multipart"
 	"os"
 	"path/filepath"
 )
 
 type Storage interface {
-	Save(name string, file *os.File) error
+	Save(name string, file multipart.File) error
 	GetByName(name string) (*os.File, error)
 }
 
@@ -21,7 +22,7 @@ func NewPhotoStorage(path string) *PhotoStorage {
 	}
 }
 
-func (ps *PhotoStorage) Save(name string, file *os.File) error {
+func (ps *PhotoStorage) Save(name string, file multipart.File) error {
 	fullPath := filepath.Join(ps.path, name)
 
 	outFile, err := os.Create(fullPath)

@@ -15,7 +15,7 @@ type Form struct {
 	Ethnicity   string
 	Citizenship string
 	Purpose     string
-	Photo       multipart.File 
+	Photo       multipart.File
 }
 
 // Definition of table Request
@@ -30,8 +30,9 @@ type Request struct {
 // Definition of table request_data
 // Contains all data from form
 type RequestData struct {
-	Id          uuid.UUID
+	Id          int
 	Request_id  uuid.UUID
+	Name        string
 	Surname     string
 	Sex         string
 	Ethnicity   string
@@ -49,6 +50,10 @@ type Visa struct {
 	Token      string
 }
 
-type FormService interface{
-    SaveForm(form *Form) error
+type FormService interface {
+	SaveForm(*Form) error
+}
+
+type FormRepository interface {
+	InsertForm(*Request, *RequestData) error
 }
