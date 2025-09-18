@@ -14,7 +14,7 @@ CREATE TABLE request (
 
 CREATE TYPE sex_type AS ENUM ('male', 'female');
 
-CREATE TABLE data (
+CREATE TABLE request_data (
     id UUID PRIMARY KEY,
     request_id UUID NOT NULL UNIQUE,
     name VARCHAR(50) NOT NULL,
