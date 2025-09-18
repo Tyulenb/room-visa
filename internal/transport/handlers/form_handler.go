@@ -2,15 +2,18 @@ package handlers
 
 import (
 	"fmt"
-	//	"io"
 	"net/http"
+	"room-visa/internal/model"
 )
 
 type FormHandler struct {
+    fs model.FormService
 }
 
-func NewFormHandler() *FormHandler {
-	return &FormHandler{}
+func NewFormHandler(fs model.FormService) *FormHandler {
+	return &FormHandler{
+        fs: fs,
+    }
 }
 
 func (f *FormHandler) RegisterRoutes(router *http.ServeMux) {
@@ -18,25 +21,32 @@ func (f *FormHandler) RegisterRoutes(router *http.ServeMux) {
 }
 
 func (f *FormHandler) readForm(w http.ResponseWriter, r *http.Request) {
-	if r.Body == nil {
-		http.Error(w, "Body is nil", http.StatusBadRequest)
-		return
-	}
-	defer r.Body.Close()
-
 	if err := r.ParseMultipartForm(32 << 20); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	defer r.Body.Close()
 
-	fileHeader := r.MultipartForm.File["photo"]
-	file, err := fileHeader[0].Open()
-	if err != nil {
+    photo, _, err := r.FormFile("photo")
+    if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
-	}
+    } 
 
-	fmt.Println(r.MultipartForm.Value)
-	fmt.Println(r.MultipartForm.File)
-	fmt.Println(file)
+    form := &model.Form{
+        Name: r.FormValue("name"), 
+        Surname: r.FormValue("surname"),
+        Sex: r.FormValue("sex"),
+        Ethnicity: r.FormValue("ethnicity"),
+        Citizenship: r.FormValue("citizenship"),
+        Purpose: r.FormValue("purpose"),
+        Photo: photo,
+    }
+
+    err = f.fs.SaveForm(form)
+    if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+    }
+    http.Redirect(w, r, "/", http.StatusSeeOther)
 }

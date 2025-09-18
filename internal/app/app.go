@@ -27,7 +27,7 @@ func (a *App) Run() error {
 	userHandler := handlers.NewUserHandler("")
 	userHandler.RegisterRoutes(router)
 
-	formHandler := handlers.NewFormHandler()
+	formHandler := handlers.NewFormHandler(nil)
 	formHandler.RegisterRoutes(router)
 
 	adminRepository := database.NewAdminRepository(a.DB)
