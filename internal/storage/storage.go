@@ -7,44 +7,44 @@ import (
 )
 
 type Storage interface {
-    Save(name string, file *os.File) error
-    GetByName(name string) (*os.File, error)
+	Save(name string, file *os.File) error
+	GetByName(name string) (*os.File, error)
 }
 
 type PhotoStorage struct {
-    path string
+	path string
 }
 
 func NewPhotoStorage(path string) *PhotoStorage {
-    return &PhotoStorage{
-        path: path,
-    }
+	return &PhotoStorage{
+		path: path,
+	}
 }
 
 func (ps *PhotoStorage) Save(name string, file *os.File) error {
-    fullPath := filepath.Join(ps.path, name)
-    
-    outFile, err := os.Create(fullPath)
-    if err != nil {
-        return err
-    }
-    defer outFile.Close()
+	fullPath := filepath.Join(ps.path, name)
 
-    _, err = io.Copy(outFile, file)
-    if err != nil {
-        return err
-    }
+	outFile, err := os.Create(fullPath)
+	if err != nil {
+		return err
+	}
+	defer outFile.Close()
 
-    return nil
+	_, err = io.Copy(outFile, file)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (ps *PhotoStorage) GetByName(name string) (*os.File, error) {
-    fullPath := filepath.Join(ps.path, name)
-    
-    file, err := os.Open(fullPath)
-    if err != nil {
-        return nil, err
-    }
+	fullPath := filepath.Join(ps.path, name)
 
-    return file, nil
+	file, err := os.Open(fullPath)
+	if err != nil {
+		return nil, err
+	}
+
+	return file, nil
 }

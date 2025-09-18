@@ -11,35 +11,35 @@ import (
 )
 
 type App struct {
-    Addr string
-    DB *sql.DB
+	Addr string
+	DB   *sql.DB
 }
 
 func NewApp(port string, db *sql.DB) *App {
-    return &App{
-        Addr: port,
-        DB: db,
-    }
+	return &App{
+		Addr: port,
+		DB:   db,
+	}
 }
 
 func (a *App) Run() error {
-    router := http.NewServeMux()
-    userHandler := handlers.NewUserHandler("")
-    userHandler.RegisterRoutes(router)
+	router := http.NewServeMux()
+	userHandler := handlers.NewUserHandler("")
+	userHandler.RegisterRoutes(router)
 
-    formHandler := handlers.NewFormHandler()
-    formHandler.RegisterRoutes(router)
+	formHandler := handlers.NewFormHandler()
+	formHandler.RegisterRoutes(router)
 
-    adminRepository := database.NewAdminRepository(a.DB)
-    adminService := service.NewAdminService(adminRepository)
-    adminHandler := handlers.NewAdminHandler(adminService)
-    adminHandler.RegisterRoutes(router)
+	adminRepository := database.NewAdminRepository(a.DB)
+	adminService := service.NewAdminService(adminRepository)
+	adminHandler := handlers.NewAdminHandler(adminService)
+	adminHandler.RegisterRoutes(router)
 
-    server := &http.Server{
-        Addr: a.Addr,
-        Handler: middlerware.Logging(router),
-    }
+	server := &http.Server{
+		Addr:    a.Addr,
+		Handler: middlerware.Logging(router),
+	}
 
-    log.Printf("Server is started on port: %s", a.Addr) 
-    return server.ListenAndServe()
+	log.Printf("Server is started on port: %s", a.Addr)
+	return server.ListenAndServe()
 }
