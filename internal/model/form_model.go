@@ -1,7 +1,7 @@
 package model
 
 import (
-	"os"
+	"mime/multipart"
 	"time"
 
 	"github.com/google/uuid"
@@ -15,7 +15,7 @@ type Form struct {
 	Ethnicity   string
 	Citizenship string
 	Purpose     string
-	Photo       *os.File
+	Photo       multipart.File 
 }
 
 // Definition of table Request
@@ -47,4 +47,8 @@ type Visa struct {
 	Id         uuid.UUID
 	Request_id uuid.UUID
 	Token      string
+}
+
+type FormService interface{
+    SaveForm(form *Form) error
 }
