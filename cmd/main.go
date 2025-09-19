@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"room-visa/internal/app"
+	"room-visa/internal/storage"
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -28,7 +29,10 @@ func main() {
 		log.Fatalf("Database is unavailable, err:%v", err)
 	}
 
-	app := app.NewApp(":3456", db)
+    storagePath := os.Getenv("STORAGE")
+    store := storage.NewPhotoStorage(storagePath)
+
+	app := app.NewApp(":3456", db, store)
 	app.Run()
 }
 
