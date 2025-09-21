@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"path/filepath"
 	"room-visa/internal/model"
 	"room-visa/internal/transport/utils"
+	"time"
 )
 
 type AdminHandler struct {
@@ -50,7 +50,15 @@ func (a *AdminHandler) authAdmin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "Login: %s, Password: %s, Token: %s", login, password, token)
+    cookie := http.Cookie {
+        Name: "AuthToken",
+        Value: token,
+        Expires: time.Now().Add(12*time.Hour),
+        Path: "/",
+        HttpOnly: true,
+    }
+
+    http.SetCookie(w, &cookie)
 }
 
 func (a *AdminHandler) addAdmin(w http.ResponseWriter, r *http.Request) {
