@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"path/filepath"
+	"room-visa/internal/middlerware"
 	"room-visa/internal/model"
 	"room-visa/internal/transport/utils"
 	"time"
@@ -22,6 +24,7 @@ func (a *AdminHandler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("GET /auth", a.adminAuthPage)
 	router.HandleFunc("POST /auth", a.authAdmin)
 	router.HandleFunc("POST /addAdmin", a.addAdmin)
+    router.Handle("GET /requests", middlerware.AuthAdminMiddle(http.HandlerFunc(a.listRequests)))
 }
 
 // Sends admin auth page
@@ -51,7 +54,7 @@ func (a *AdminHandler) authAdmin(w http.ResponseWriter, r *http.Request) {
 	}
 
     cookie := http.Cookie {
-        Name: "AuthToken",
+        Name: "AuthAdminToken",
         Value: token,
         Expires: time.Now().Add(12*time.Hour),
         Path: "/",
@@ -78,4 +81,8 @@ func (a *AdminHandler) addAdmin(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
 	}
+}
+
+func (a *AdminHandler) listRequests(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprint(w, "Success")
 }
