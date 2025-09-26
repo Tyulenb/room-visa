@@ -1,13 +1,11 @@
 package middlerware
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"time"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func AuthAdminMiddle(next http.Handler ) http.Handler {
@@ -47,20 +45,9 @@ func keyFunc(token *jwt.Token) (any, error) {
 
 func ValidToken(tokenString string) error {
 	token, err := jwt.Parse(tokenString, keyFunc)
-	if err != nil {
-		return err
-	}
-
-	if claims, ok := token.Claims.(jwt.MapClaims); ok {
-        exp, ok := claims["exp"].(float64)
-        if !ok {
-            return fmt.Errorf("invalid exp claim")
-        }
-		if exp < float64(time.Now().Unix()) {
-			return fmt.Errorf("Token expired")
-		}
-		return nil
-	} else {
-		return fmt.Errorf("Incorrect claims")
-	}
+    if token.Valid {
+        return nil
+    }else {
+        return err
+    }
 }
