@@ -56,4 +56,6 @@ type FormService interface {
 
 type FormRepository interface {
 	InsertForm(*Request, *RequestData) error
+    SelectRequests() ([]Request, error)
+    SelectRequestDataByRequest(req uuid.UUID) (*RequestData, error)
 }
