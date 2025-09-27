@@ -52,6 +52,7 @@ type Visa struct {
 
 type FormService interface {
 	SaveForm(*Form) error
+    GetForms() ([]Form, error)
 }
 
 type FormRepository interface {

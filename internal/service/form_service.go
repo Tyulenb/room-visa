@@ -48,3 +48,18 @@ func (fs *FormService) SaveForm(form *model.Form) error {
 
 	return fs.fr.InsertForm(request, data)
 }
+
+func (fs *FormService) GetForms() ([]model.Form, error) {
+    //TO DO
+    requests, err := fs.fr.SelectRequests()
+    if err != nil {
+        return nil, err
+    }
+
+    forms := make([]model.Form, 0)
+
+    for _, r := range requests{
+        form := new(model.Form) 
+          
+    }
+}
