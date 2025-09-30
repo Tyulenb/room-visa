@@ -5,6 +5,10 @@ import (
 	"room-visa/internal/model"
 )
 
+//!!!!!!!!!! 
+//!!TO DO move this logic to user_handlers!!
+//!!!!!!!!!!
+
 type FormHandler struct {
     fs model.FormService
 }
@@ -19,6 +23,9 @@ func (f *FormHandler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("POST /form", f.readForm)
 }
 
+//!!!!!!!!!! 
+//!!TO DO move this logic to user_handlers!!
+//!!!!!!!!!!
 func (f *FormHandler) readForm(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseMultipartForm(32 << 20); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

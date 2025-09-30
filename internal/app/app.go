@@ -37,7 +37,7 @@ func (a *App) Run() error {
 
 	adminRepository := database.NewAdminRepository(a.DB)
 	adminService := service.NewAdminService(adminRepository)
-	adminHandler := handlers.NewAdminHandler(adminService)
+	adminHandler := handlers.NewAdminHandler(adminService, formService)
 	adminHandler.RegisterRoutes(router)
 
 	server := &http.Server{

@@ -23,7 +23,6 @@ func (as *AdminService) CheckPassword(login, password string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(password)
 	return bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 }
 

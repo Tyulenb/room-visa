@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"path/filepath"
 	"room-visa/internal/middlerware"
@@ -12,11 +13,13 @@ import (
 
 type AdminHandler struct {
 	as model.AdminService
+    fs model.FormService
 }
 
-func NewAdminHandler(as model.AdminService) *AdminHandler {
+func NewAdminHandler(as model.AdminService, fs model.FormService) *AdminHandler {
 	return &AdminHandler{
 		as: as,
+        fs: fs,
 	}
 }
 
@@ -84,5 +87,12 @@ func (a *AdminHandler) addAdmin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *AdminHandler) listRequests(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprint(w, "Success")
+    //TO DO make dynamic forms with template
+    //Request approval/disapproval with htmx
+    data, err := a.fs.GetForms()
+    if err != nil {
+		http.Error(w, "Something went wrong", http.StatusBadGateway)
+        log.Println(err)
+    }
+    fmt.Fprint(w, data)
 }

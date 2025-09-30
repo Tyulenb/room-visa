@@ -72,5 +72,6 @@ func (fs *FormService) GetForms() ([]model.RequestData, error) {
 
 //Returns profile photo by it's name
 func (fs *FormService) LoadFormPhoto(photoName string) (*os.File, error) {
+    //TO DO convert file to jpg
     return fs.st.GetByName(photoName)
 }

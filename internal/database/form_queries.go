@@ -81,7 +81,7 @@ func (fr *FormRepository) SelectRequests() ([]model.Request, error) {
 }
 
 func (fr *FormRepository) SelectAwaitingRequests() ([]model.Request, error) {
-    query := `SELECT * FROM requests WHERE status = $1`
+    query := `SELECT * FROM request WHERE status = $1`
     return fr.selectFromRequests(query, "Awaiting")
 }
 
