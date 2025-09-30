@@ -1,6 +1,7 @@
 package service
 
 import (
+	"os"
 	"room-visa/internal/model"
 	"room-visa/internal/storage"
 	"time"
@@ -20,6 +21,7 @@ func NewFormService(fr model.FormRepository, st storage.Storage) *FormService {
 	}
 }
 
+//Saves forms to database and profile photo to storage
 func (fs *FormService) SaveForm(form *model.Form) error {
 	photoName := uuid.NewString()
 	fs.st.Save(photoName, form.Photo)
@@ -49,17 +51,26 @@ func (fs *FormService) SaveForm(form *model.Form) error {
 	return fs.fr.InsertForm(request, data)
 }
 
-func (fs *FormService) GetForms() ([]model.Form, error) {
-    //TO DO
-    requests, err := fs.fr.SelectRequests()
+//Returns all forms that need to be checked
+func (fs *FormService) GetForms() ([]model.RequestData, error) {
+    requests, err := fs.fr.SelectAwaitingRequests()
     if err != nil {
         return nil, err
     }
 
-    forms := make([]model.Form, 0)
+    requestData := make([]model.RequestData, 0)
 
     for _, r := range requests{
-        form := new(model.Form) 
-          
+        data, err := fs.fr.SelectRequestDataByRequest(r.Id)
+        if err != nil {
+            return nil, err
+        }
+        requestData = append(requestData, *data) 
     }
+    return requestData, nil
+}
+
+//Returns profile photo by it's name
+func (fs *FormService) LoadFormPhoto(photoName string) (*os.File, error) {
+    return fs.st.GetByName(photoName)
 }

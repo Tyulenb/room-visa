@@ -51,10 +51,8 @@ func (fr *FormRepository) InsertForm(req *model.Request, data *model.RequestData
     return tx.Commit() 
 }
 
-//SELECTS all data from table requests
-func (fr *FormRepository) SelectRequests() ([]model.Request, error) {
-    query := `SELECT * FROM request`
-    rows, err := fr.db.Query(query)
+func (fr *FormRepository) selectFromRequests(query string, args ...any) ([]model.Request, error){
+    rows, err := fr.db.Query(query, args...)
     if err != nil {
         return nil, err
     }
@@ -74,6 +72,17 @@ func (fr *FormRepository) SelectRequests() ([]model.Request, error) {
     }
 
     return requests, nil
+}
+
+//SELECTS all data from table requests
+func (fr *FormRepository) SelectRequests() ([]model.Request, error) {
+    query := `SELECT * FROM request`
+    return fr.selectFromRequests(query)
+}
+
+func (fr *FormRepository) SelectAwaitingRequests() ([]model.Request, error) {
+    query := `SELECT * FROM requests WHERE status = $1`
+    return fr.selectFromRequests(query, "Awaiting")
 }
 
 func (fr *FormRepository) SelectRequestDataByRequest(req uuid.UUID) (*model.RequestData, error) {
@@ -97,3 +106,4 @@ func (fr *FormRepository) SelectRequestDataByRequest(req uuid.UUID) (*model.Requ
 
     return data, nil
 }
+

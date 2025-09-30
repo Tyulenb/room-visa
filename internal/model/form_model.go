@@ -2,6 +2,7 @@ package model
 
 import (
 	"mime/multipart"
+	"os"
 	"time"
 
 	"github.com/google/uuid"
@@ -52,11 +53,13 @@ type Visa struct {
 
 type FormService interface {
 	SaveForm(*Form) error
-    GetForms() ([]Form, error)
+    GetForms() ([]RequestData, error)
+    LoadFormPhoto(photoName string) (*os.File, error)
 }
 
 type FormRepository interface {
 	InsertForm(*Request, *RequestData) error
     SelectRequests() ([]Request, error)
+    SelectAwaitingRequests() ([]Request, error)
     SelectRequestDataByRequest(req uuid.UUID) (*RequestData, error)
 }
