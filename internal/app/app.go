@@ -27,13 +27,12 @@ func NewApp(port string, db *sql.DB, store storage.Storage) *App {
 
 func (a *App) Run() error {
 	router := http.NewServeMux()
-	userHandler := handlers.NewUserHandler("")
-	userHandler.RegisterRoutes(router)
     
     formRepository := database.NewFormRepository(a.DB)
     formService := service.NewFormService(formRepository, a.Storage)
-	formHandler := handlers.NewFormHandler(formService)
-	formHandler.RegisterRoutes(router)
+
+	userHandler := handlers.NewUserHandler(formService)
+	userHandler.RegisterRoutes(router)
 
 	adminRepository := database.NewAdminRepository(a.DB)
 	adminService := service.NewAdminService(adminRepository)
