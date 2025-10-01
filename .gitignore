@@ -2,5 +2,7 @@
 *.yml
 *.yaml
 *.env
+*.jpeg
+*.png
+*.jpg
 .exe
-storage/

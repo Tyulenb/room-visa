@@ -1,10 +1,14 @@
 package storage
 
 import (
-	"io"
+	"image"
+	"image/jpeg"
+	"image/png"
 	"mime/multipart"
 	"os"
 	"path/filepath"
+	"strings"
+
 )
 
 type Storage interface {
@@ -23,7 +27,12 @@ func NewPhotoStorage(path string) *PhotoStorage {
 }
 
 func (ps *PhotoStorage) Save(name string, file multipart.File) error {
-	fullPath := filepath.Join(ps.path, name)
+    img, format, err := image.Decode(file) 
+    if err != nil {
+        return err
+    }
+
+	fullPath := filepath.Join(ps.path, name+"."+format)
 
 	outFile, err := os.Create(fullPath)
 	if err != nil {
@@ -31,10 +40,16 @@ func (ps *PhotoStorage) Save(name string, file multipart.File) error {
 	}
 	defer outFile.Close()
 
-	_, err = io.Copy(outFile, file)
-	if err != nil {
-		return err
-	}
+    switch strings.ToLower(format) {
+    case "jpeg", "jpg":
+        if err := jpeg.Encode(outFile, img, nil); err != nil {
+            return err
+        }
+    case "png":
+        if err := png.Encode(outFile, img); err != nil {
+            return err
+        }
+    }
 
 	return nil
 }
