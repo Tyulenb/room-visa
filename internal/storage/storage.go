@@ -32,7 +32,7 @@ func (ps *PhotoStorage) Save(name string, file multipart.File) error {
         return err
     }
 
-	fullPath := filepath.Join(ps.path, name+"."+format)
+	fullPath := filepath.Join(ps.path, name)
 
 	outFile, err := os.Create(fullPath)
 	if err != nil {
