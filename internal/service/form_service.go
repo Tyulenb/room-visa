@@ -1,7 +1,8 @@
 package service
 
 import (
-	"os"
+	"encoding/base64"
+	"io"
 	"room-visa/internal/model"
 	"room-visa/internal/storage"
 	"time"
@@ -70,7 +71,19 @@ func (fs *FormService) GetForms() ([]model.RequestData, error) {
     return requestData, nil
 }
 
-//Returns profile photo by it's name
-func (fs *FormService) LoadFormPhoto(photoName string) (*os.File, error) {
-    return fs.st.GetByName(photoName)
+//Loads photo from storage
+//Encodes it in base64 string format
+func (fs *FormService) LoadFormPhoto(photoName string) (string, error) {
+    photo, err := fs.st.GetByName(photoName)
+    if err != nil {
+        return "", err
+    }
+    defer photo.Close()
+
+    dataBytes, err := io.ReadAll(photo)
+    if err != nil {
+        return "", err
+    }
+    enc := base64.StdEncoding.EncodeToString(dataBytes)
+    return enc, nil
 }
