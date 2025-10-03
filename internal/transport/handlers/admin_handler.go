@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -87,12 +88,32 @@ func (a *AdminHandler) addAdmin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *AdminHandler) listRequests(w http.ResponseWriter, r *http.Request) {
-    //TO DO make dynamic forms with template
-    //Request approval/disapproval with htmx
-    data, err := a.fs.GetForms()
-    if err != nil {
+	data, err := a.fs.GetForms()
+	if err != nil {
 		http.Error(w, "Something went wrong", http.StatusBadGateway)
-        log.Println(err)
+		log.Println("GetForms:", err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	fmt.Fprintln(w, "<!doctype html><html><head><meta charset=\"utf-8\"><title>Requests</title></head><body>")
+
+    tmpl, err := template.ParseFiles("web/request_template.html")
+    if err != nil {
+        http.Error(w, "Something went wrong", http.StatusBadGateway)
+        log.Println("ParseFiles:", err)
     }
-    fmt.Fprint(w, data)
+
+	for i, v := range data {
+		photo, err := a.fs.LoadFormPhoto(v.Photo) //photo in base64 format
+		if err != nil {
+            http.Error(w, "Something went wrong", http.StatusBadGateway)
+            log.Println("LoadFormPhoto:", err)
+			continue
+		}
+        data[i].Photo = photo //Now represents image encoding in base 64, for template
+        tmpl.Execute(w, data[i])
+	}
+
+	fmt.Fprintln(w, "</body></html>")
 }
