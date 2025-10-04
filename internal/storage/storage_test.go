@@ -2,11 +2,42 @@ package storage
 
 import (
 	"bytes"
+	"image"
+	"image/color"
+	"image/png"
 	"io"
+	"mime/multipart"
 	"os"
 	"path/filepath"
 	"testing"
 )
+
+func makePNG(t *testing.T) multipart.File{
+    t.Helper()
+    buf := &bytes.Buffer{}
+    img := image.NewRGBA(image.Rect(0, 0, 10, 10))
+    for y := 0; y < 10; y++ {
+        for x := 0; x < 10; x++ {
+            img.Set(x,y, color.RGBA{R:255, G:255})
+        }
+    }
+    if err := png.Encode(buf, img); err != nil {
+        t.Fatalf("Error during encoding img: %v", err)
+    }
+
+    tmp, err := os.CreateTemp("", "photo-*.png")
+    if err != nil {
+        t.Fatalf("Error during file creation: %v", err)
+    }
+    if _, err := tmp.Write(buf.Bytes()); err != nil {
+        t.Fatalf("Error during file writing: %v", err)
+    }
+    if _, err := tmp.Seek(0, io.SeekStart); err != nil {
+        t.Fatalf("Error during seek: %v", err)
+    }
+    return tmp
+
+}
 
 func TestPhotoStorage_Save(t *testing.T) {
 	tmpDir := t.TempDir()
