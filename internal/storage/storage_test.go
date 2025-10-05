@@ -4,15 +4,34 @@ import (
 	"bytes"
 	"image"
 	"image/color"
+	"image/jpeg"
 	"image/png"
 	"io"
 	"mime/multipart"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
+
+	"github.com/google/uuid"
 )
 
-func makePNG(t *testing.T) multipart.File{
+func CreateTemp(t *testing.T, buf *bytes.Buffer) multipart.File {
+    t.Helper()
+    tmp, err := os.CreateTemp("", "photo-*.jpeg")
+    if err != nil {
+        t.Fatalf("Error during file creation: %v", err)
+    }
+    if _, err := tmp.Write(buf.Bytes()); err != nil {
+        t.Fatalf("Error during file writing: %v", err)
+    }
+    if _, err := tmp.Seek(0, io.SeekStart); err != nil {
+        t.Fatalf("Error during seek: %v", err)
+    }
+    return tmp
+}
+
+func makePNG(t *testing.T) multipart.File {
     t.Helper()
     buf := &bytes.Buffer{}
     img := image.NewRGBA(image.Rect(0, 0, 10, 10))
@@ -25,53 +44,99 @@ func makePNG(t *testing.T) multipart.File{
         t.Fatalf("Error during encoding img: %v", err)
     }
 
-    tmp, err := os.CreateTemp("", "photo-*.png")
-    if err != nil {
-        t.Fatalf("Error during file creation: %v", err)
-    }
-    if _, err := tmp.Write(buf.Bytes()); err != nil {
-        t.Fatalf("Error during file writing: %v", err)
-    }
-    if _, err := tmp.Seek(0, io.SeekStart); err != nil {
-        t.Fatalf("Error during seek: %v", err)
-    }
-    return tmp
-
+    return CreateTemp(t, buf)
 }
 
-func TestPhotoStorage_Save(t *testing.T) {
-	tmpDir := t.TempDir()
+func makeJPEG(t *testing.T) multipart.File {
+    t.Helper()
+    buf := &bytes.Buffer{}
+    img := image.NewRGBA(image.Rect(0, 0, 10, 10))
+    for y := 0; y < 10; y++ {
+        for x := 0; x < 10; x++ {
+            img.Set(x,y, color.RGBA{R:255, B:255})
+        }
+    }
+    if err := jpeg.Encode(buf, img, nil); err != nil {
+        t.Fatalf("Error during encoding img: %v", err)
+    }
 
-	ps := NewPhotoStorage(tmpDir)
-	name := "test.jpg"
+    return CreateTemp(t, buf)
+}
 
-	content := []byte("TEST FILE")
-	srcPath := filepath.Join(tmpDir, "src.tmp")
+func makeBadFile(t *testing.T) multipart.File {
+    t.Helper()
+    buf := bytes.NewBufferString("NOT AN IMAGE")
+    return CreateTemp(t, buf)
+}
 
-	if err := os.WriteFile(srcPath, content, 0644); err != nil {
-		t.Fatal(err)
-	}
+func TestSaveGet(t *testing.T) {
+    tmpDir := t.TempDir()
+	ps := &PhotoStorage{path: tmpDir}
+    name := uuid.NewString()
 
-	srcFile, err := os.Open(srcPath)
-	if err != nil {
-		t.Fatal(err)
-	}
+    tests := []struct{
+        name string
+        img multipart.File
+        format string
+        expErr bool
+        err error
+    }{
+        {
+            name: "PNG",
+            img: makePNG(t),
+            format: "png",
+            expErr: false,
+            err: nil,
+        },
+        {
+            name: "JPEG",
+            img: makeJPEG(t),
+            format: "jpeg",
+            expErr: false,
+            err: nil,
+        },
+        {
+            name: "BAD",
+            img: makeBadFile(t),
+            format: "jpeg",
+            expErr: true,
+            err: image.ErrFormat,
+        },
+    }
+    
+    for _, tt := range tests {
+        err := ps.Save(name, tt.img)
+        if err != nil {
+            if tt.expErr && tt.err == err {
+                return
+            }else {
+                t.Fatalf("Test: %s\nSave(name, img) failed: %v", tt.name, err)
+            }
+        }
+        
+        fullPath := filepath.Join(tmpDir, name)
+        photoStats, err := os.Stat(fullPath)
+        if err != nil {
+            t.Fatalf("Test: %s\nStat failed: %v", tt.name, err)
+        }
 
-	if err := ps.Save(name, srcFile); err != nil {
-		t.Fatalf("Save returned error: %v", err)
-	}
+        if photoStats.Size() == 0 {
+            t.Fatalf("Test: %s\nFile size is 0, empty image", tt.name)
+        }
 
-	gotFile, err := ps.GetByName(name)
-	if err != nil {
-		t.Fatalf("GetByName returned err: %v", err)
-	}
-	defer gotFile.Close()
+        file, err := ps.GetByName(name)
+        if err != nil {
+            t.Fatalf("Test: %s\nFailed GetByName(name): %v", err, tt.name)
+        }
 
-	gotBytes, err := io.ReadAll(gotFile)
-	if err != nil {
-		t.Fatalf("read saved file: %v", err)
-	}
-	if !bytes.Equal(gotBytes, content) {
-		t.Fatalf("file content mismatch: got %q want %q", string(gotBytes), string(content))
-	}
+        _, format, err := image.Decode(file)
+        if err != nil {
+            t.Fatalf("Test: %s\nFailed during file decoding: %v", err, tt.name)
+        }
+
+        frmt := strings.ToLower(format)
+        if (frmt != tt.format) {
+            t.Fatalf("Test: %s\nExpected %s, but got: %s", tt.name, tt.format, frmt)
+        }
+    }
 }
