@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 	"room-visa/internal/model"
 
 	"github.com/google/uuid"
@@ -107,3 +108,26 @@ func (fr *FormRepository) SelectRequestDataByRequest(req uuid.UUID) (*model.Requ
     return data, nil
 }
 
+func (fr *FormRepository) UpdateRequestStatus(req uuid.UUID, status string) error{
+    query := `UPDATE request SET status = $1 WHERE id = $2`
+    
+    tx, err := fr.db.Begin()
+    if err != nil {
+        return err
+    }
+    result, err := tx.Exec(query, status, req)
+    if err != nil {
+        tx.Rollback()
+        return err
+    }
+    affected, err := result.RowsAffected()
+    if err != nil {
+        tx.Rollback()
+        return err
+    }
+    if affected != 1 {
+        tx.Rollback()
+        return fmt.Errorf("Expected 1 row to be affected, but got: %v", affected) 
+    }
+    return tx.Commit() 
+}
