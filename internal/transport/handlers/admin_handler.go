@@ -10,6 +10,8 @@ import (
 	"room-visa/internal/model"
 	"room-visa/internal/transport/utils"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type AdminHandler struct {
@@ -67,6 +69,7 @@ func (a *AdminHandler) authAdmin(w http.ResponseWriter, r *http.Request) {
     }
 
     http.SetCookie(w, &cookie)
+    http.Redirect(w, r, "/requests", http.StatusSeeOther)
 }
 
 func (a *AdminHandler) addAdmin(w http.ResponseWriter, r *http.Request) {
@@ -103,6 +106,7 @@ func (a *AdminHandler) listRequests(w http.ResponseWriter, r *http.Request) {
     if err != nil {
         http.Error(w, "Something went wrong", http.StatusBadGateway)
         log.Println("ParseFiles:", err)
+        return
     }
 
 	for i, v := range data {
@@ -123,6 +127,17 @@ func (a *AdminHandler) checkRequest(w http.ResponseWriter, r *http.Request) {
     values := r.URL.Query()
     status := values.Get("result")
     id := values.Get("id")
-    fmt.Println(id, status)
+    uuid, err := uuid.Parse(id)
+    if err != nil {
+        http.Error(w, "Something went wrong", http.StatusBadGateway)
+        log.Println("uuidParse:", err)
+        return
+    }
+    err = a.fs.ChangeFormStatus(uuid, status)
+    if err != nil {
+        http.Error(w, "Something went wrong", http.StatusBadGateway)
+        log.Println("ChangeFormStatus:", err)
+        return
+    }
 }
 

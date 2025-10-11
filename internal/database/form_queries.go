@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"room-visa/internal/model"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -109,13 +110,14 @@ func (fr *FormRepository) SelectRequestDataByRequest(req uuid.UUID) (*model.Requ
 }
 
 func (fr *FormRepository) UpdateRequestStatus(req uuid.UUID, status string) error{
-    query := `UPDATE request SET status = $1 WHERE id = $2`
-    
+    query := `UPDATE request SET status = $1, updated_at = $2 WHERE id = $3`
+    timeNow := time.Now()
+
     tx, err := fr.db.Begin()
     if err != nil {
         return err
     }
-    result, err := tx.Exec(query, status, req)
+    result, err := tx.Exec(query, status, timeNow, req)
     if err != nil {
         tx.Rollback()
         return err

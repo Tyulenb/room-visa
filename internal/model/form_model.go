@@ -54,6 +54,7 @@ type FormService interface {
 	SaveForm(*Form) error
     GetForms() ([]RequestData, error)
     LoadFormPhoto(photoName string) (string, error)
+    ChangeFormStatus(uuid.UUID, string) error
 }
 
 type FormRepository interface {

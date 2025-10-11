@@ -87,3 +87,7 @@ func (fs *FormService) LoadFormPhoto(photoName string) (string, error) {
     enc := base64.StdEncoding.EncodeToString(dataBytes)
     return enc, nil
 }
+
+func (fs *FormService) ChangeFormStatus(id uuid.UUID, status string) error {
+    return fs.fr.UpdateRequestStatus(id, status) 
+}

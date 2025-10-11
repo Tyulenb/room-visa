@@ -13,12 +13,12 @@
       </ul>
   </div>
   <div class="Buttons">
-      <button hx-get="/requests/check?id={{.Request_id}}&result=approve"
+      <button hx-get="/requests/check?id={{.Request_id}}&result=Approved"
               hx-swap="delete"
               hx-target="#req-{{.Request_id}}">
           Approve
       </button>
-      <button hx-get="/requests/check?id={{.Request_id}}&result=reject"
+      <button hx-get="/requests/check?id={{.Request_id}}&result=Rejected"
               hx-swap="delete"
               hx-target="#req-{{.Request_id}}">
           Reject 
