@@ -29,6 +29,7 @@ func (a *AdminHandler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("POST /auth", a.authAdmin)
 	router.HandleFunc("POST /addAdmin", a.addAdmin)
     router.Handle("GET /requests", middlerware.AuthAdminMiddle(http.HandlerFunc(a.listRequests)))
+    router.Handle("GET /requests/check", middlerware.AuthAdminMiddle(http.HandlerFunc(a.checkRequest)))
 }
 
 // Sends admin auth page
@@ -96,7 +97,7 @@ func (a *AdminHandler) listRequests(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprintln(w, "<!doctype html><html><head><meta charset=\"utf-8\"><title>Requests</title></head><body>")
+	fmt.Fprintln(w, `<!doctype html><html><head><script src="https://unpkg.com/htmx.org@1.9.4"></script><meta charset=\"utf-8\"><title>Requests</title></head><body>`)
 
     tmpl, err := template.ParseFiles("web/request_template.html")
     if err != nil {
@@ -117,3 +118,11 @@ func (a *AdminHandler) listRequests(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintln(w, "</body></html>")
 }
+
+func (a *AdminHandler) checkRequest(w http.ResponseWriter, r *http.Request) {
+    values := r.URL.Query()
+    status := values.Get("result")
+    id := values.Get("id")
+    fmt.Println(id, status)
+}
+

@@ -1,4 +1,4 @@
-<div style="display: flex; width: 100%; height: 300px; overflow: hidden;">
+<div id="{{.Request_id}}" style="display: flex; width: 100%; height: 300px; overflow: hidden;">
   <div class="image">
       <img src="data:image/*;base64,{{.Photo}}" width="189" height="255" alt="lorem">
   </div>
@@ -11,5 +11,18 @@
           <li>{{.Citizenship}}</li>
           <li>{{.Purpose}}</li>
       </ul>
+  </div>
+  <div class="Buttons">
+      <button hx-get="/requests/check?id={{.Request_id}}&result=approve"
+              hx-swap="delete"
+              hx-target="#{{.Request_id}}">
+          Approve
+      </button>
+  <div class="Buttons">
+      <button hx-get="/requests/check?id={{.Request_id}}&result=reject"
+              hx-swap="delete"
+              hx-target="#{{.Request_id}}">
+          Reject 
+      </button>
   </div>
 </div>
