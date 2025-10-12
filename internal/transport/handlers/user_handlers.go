@@ -1,9 +1,13 @@
 package handlers
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 	"path/filepath"
 	"room-visa/internal/model"
+
+	"github.com/google/uuid"
 )
 
 type UserHandler struct {
@@ -21,6 +25,7 @@ func (uh *UserHandler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("GET /form", uh.formPage)
 	router.HandleFunc("POST /form", uh.readForm)
 	router.HandleFunc("GET /status", uh.statusPage)
+	router.HandleFunc("POST /status", uh.requestStatus)
 }
 
 func (uh *UserHandler) homePage(w http.ResponseWriter, r *http.Request) {
@@ -51,6 +56,28 @@ func (uh *UserHandler) statusPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.ServeFile(w, r, path)
+}
+
+func (uh *UserHandler) requestStatus(w http.ResponseWriter, r *http.Request) {
+    if err := r.ParseForm(); err != nil {
+        http.Error(w, "Something went wrong", http.StatusBadRequest)
+        log.Println(err)
+        return
+    }
+    reqId := r.FormValue("request")
+    uid, err := uuid.Parse(reqId)
+    if err != nil {
+        http.Error(w, "Something went wrong", http.StatusBadRequest)
+        log.Println(err)
+        return
+    }
+    req, err := uh.fs.FindFormById(uid)
+    if err != nil {
+        http.Error(w, "Something went wrong", http.StatusBadRequest)
+        log.Println(err)
+        return
+    }
+    fmt.Fprintf(w, "Your request's status is: %s", req.Status)
 }
 
 func (uh *UserHandler) readForm(w http.ResponseWriter, r *http.Request) {

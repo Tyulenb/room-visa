@@ -53,7 +53,7 @@ func (fs *FormService) SaveForm(form *model.Form) error {
 }
 
 //Returns all forms that need to be checked
-func (fs *FormService) GetForms() ([]model.RequestData, error) {
+func (fs *FormService) GetAwaitingForms() ([]model.RequestData, error) {
     requests, err := fs.fr.SelectAwaitingRequests()
     if err != nil {
         return nil, err
@@ -90,4 +90,8 @@ func (fs *FormService) LoadFormPhoto(photoName string) (string, error) {
 
 func (fs *FormService) ChangeFormStatus(id uuid.UUID, status string) error {
     return fs.fr.UpdateRequestStatus(id, status) 
+}
+
+func (fs *FormService) FindFormById(id uuid.UUID) (*model.Request, error) {
+    return fs.fr.SelectRequestById(id)
 }

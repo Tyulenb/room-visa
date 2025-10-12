@@ -92,7 +92,7 @@ func (a *AdminHandler) addAdmin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *AdminHandler) listRequests(w http.ResponseWriter, r *http.Request) {
-	data, err := a.fs.GetForms()
+	data, err := a.fs.GetAwaitingForms()
 	if err != nil {
 		http.Error(w, "Something went wrong", http.StatusBadGateway)
 		log.Println("GetForms:", err)

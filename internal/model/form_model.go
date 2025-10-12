@@ -52,7 +52,8 @@ type Visa struct {
 
 type FormService interface {
 	SaveForm(*Form) error
-    GetForms() ([]RequestData, error)
+    GetAwaitingForms() ([]RequestData, error)
+    FindFormById(req uuid.UUID) (*Request, error)
     LoadFormPhoto(photoName string) (string, error)
     ChangeFormStatus(uuid.UUID, string) error
 }
@@ -60,6 +61,7 @@ type FormService interface {
 type FormRepository interface {
 	InsertForm(*Request, *RequestData) error
     SelectRequests() ([]Request, error)
+    SelectRequestById(req uuid.UUID) (*Request, error)
     SelectAwaitingRequests() ([]Request, error)
     SelectRequestDataByRequest(req uuid.UUID) (*RequestData, error)
     UpdateRequestStatus(req uuid.UUID, status string) error
