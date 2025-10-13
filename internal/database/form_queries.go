@@ -90,6 +90,9 @@ func (fr *FormRepository) SelectAwaitingRequests() ([]model.Request, error) {
 func (fr *FormRepository) SelectRequestById(req uuid.UUID) (*model.Request, error){
     query := `SELECT * FROM request WHERE id = $1` 
     row, err := fr.selectFromRequests(query, req)
+    if err != nil {
+        return nil, err
+    }
     return &row[0], err
 }
 

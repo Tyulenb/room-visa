@@ -67,13 +67,13 @@ func (uh *UserHandler) requestStatus(w http.ResponseWriter, r *http.Request) {
     reqId := r.FormValue("request")
     uid, err := uuid.Parse(reqId)
     if err != nil {
-        http.Error(w, "Something went wrong", http.StatusBadRequest)
+        fmt.Fprint(w, "Your request was not found, check your id")
         log.Println(err)
         return
     }
     req, err := uh.fs.FindFormById(uid)
     if err != nil {
-        http.Error(w, "Something went wrong", http.StatusBadRequest)
+        fmt.Fprint(w, "Your request was not found, check your id")
         log.Println(err)
         return
     }
