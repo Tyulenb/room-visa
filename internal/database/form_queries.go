@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"room-visa/internal/model"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -118,7 +119,7 @@ func (fr *FormRepository) SelectRequestDataByRequest(req uuid.UUID) (*model.Requ
     return data, nil
 }
 
-func (fr *FormRepository) UpdateRequestStatus(req uuid.UUID, status string) error{
+func (fr *FormRepository) UpdateRequestStatus(req uuid.UUID, status, token string) error{
     query := `UPDATE request SET status = $1, updated_at = $2 WHERE id = $3`
     timeNow := time.Now()
 
@@ -140,5 +141,20 @@ func (fr *FormRepository) UpdateRequestStatus(req uuid.UUID, status string) erro
         tx.Rollback()
         return fmt.Errorf("Expected 1 row to be affected, but got: %v", affected) 
     }
+    //IF status is approved, then we need to insert visa
+    if strings.Compare(status, "Approved") == 0 {
+        err := fr.InsertVisa(tx, req, token)
+        if err != nil {
+            tx.Rollback()
+            return err
+        }
+    }
     return tx.Commit() 
+}
+
+func (fr *FormRepository) InsertVisa(tx *sql.Tx, req uuid.UUID, token string) error {
+    visaId := uuid.NewString()
+    query := `INSERT INTO visa (id, request_id, token) VALUES($1, $2, $3)` 
+    _, err := tx.Exec(query, visaId, req, token)
+    return err 
 }

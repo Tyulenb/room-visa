@@ -64,5 +64,5 @@ type FormRepository interface {
     SelectRequestById(req uuid.UUID) (*Request, error)
     SelectAwaitingRequests() ([]Request, error)
     SelectRequestDataByRequest(req uuid.UUID) (*RequestData, error)
-    UpdateRequestStatus(req uuid.UUID, status string) error
+    UpdateRequestStatus(req uuid.UUID, status, token string) error
 }

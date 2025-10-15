@@ -5,6 +5,7 @@ import (
 	"io"
 	"room-visa/internal/model"
 	"room-visa/internal/storage"
+	"room-visa/internal/transport/utils"
 	"time"
 
 	"github.com/google/uuid"
@@ -89,7 +90,11 @@ func (fs *FormService) LoadFormPhoto(photoName string) (string, error) {
 }
 
 func (fs *FormService) ChangeFormStatus(id uuid.UUID, status string) error {
-    return fs.fr.UpdateRequestStatus(id, status) 
+    token, err := utils.GenerateVisaToken(id) 
+    if err != nil {
+        return err
+    }
+    return fs.fr.UpdateRequestStatus(id, status, token) 
 }
 
 func (fs *FormService) FindFormById(id uuid.UUID) (*model.Request, error) {

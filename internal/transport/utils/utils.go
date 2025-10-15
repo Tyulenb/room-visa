@@ -33,10 +33,10 @@ func GenerateVisaToken(req uuid.UUID) (string, error) {
         "sub": "visa",
         "exp": time.Now().Add(time.Hour*32).Unix(),
         "iat": time.Now(),
-        "visaReq": req, 
+        "visaReq": req,
     }
     secret := os.Getenv("VISA_KEY")
-    return generateToken(visaClaims, secret) 
+    return generateToken(visaClaims, secret)
 }
 
 func ParseJSON(r *http.Request, payload any) error {
