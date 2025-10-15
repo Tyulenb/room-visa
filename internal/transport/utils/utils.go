@@ -8,19 +8,35 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
-func GenerateToken() (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+func generateToken(mc jwt.MapClaims, secret string) (string, error) {
+    token := jwt.NewWithClaims(jwt.SigningMethodHS256, mc)
+	tokenString, err := token.SignedString([]byte(secret))
+	return tokenString, err
+}
+
+func GenerateAuthToken() (string, error) {
+    admClaims := jwt.MapClaims{
 		"sub": "admin",
 		"exp": time.Now().Add(time.Hour * 1).Unix(),
 		"iat": time.Now().Unix(),
-	})
-
+	}
 	secret := os.Getenv("ADMIN_AUTH_KEY")
-	tokenString, err := token.SignedString([]byte(secret))
 
-	return tokenString, err
+	return generateToken(admClaims, secret)
+}
+
+func GenerateVisaToken(req uuid.UUID) (string, error) {
+    visaClaims := jwt.MapClaims{
+        "sub": "visa",
+        "exp": time.Now().Add(time.Hour*32).Unix(),
+        "iat": time.Now(),
+        "visaReq": req, 
+    }
+    secret := os.Getenv("VISA_KEY")
+    return generateToken(visaClaims, secret) 
 }
 
 func ParseJSON(r *http.Request, payload any) error {

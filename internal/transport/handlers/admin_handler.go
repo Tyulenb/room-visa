@@ -54,7 +54,7 @@ func (a *AdminHandler) authAdmin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := utils.GenerateToken()
+	token, err := utils.GenerateAuthToken()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
