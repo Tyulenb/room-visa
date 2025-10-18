@@ -9,6 +9,7 @@ import (
 
 	"time"
 
+    "room-visa/internal/crypto"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -21,6 +22,7 @@ func GenerateToken(t *testing.T, sub string, exp time.Time) (string, error) {
 	})
 
 	secret := os.Getenv("ADMIN_AUTH_KEY")
+    token.Header["kid"] = "AuthAdmin"
 	tokenString, err := token.SignedString([]byte(secret))
 
 	return tokenString, err
@@ -50,7 +52,7 @@ func TestValidToken(t *testing.T) {
     for _, tt := range tests {
         token, _ := GenerateToken(t, tt.sub, tt.exp)
 
-        err := ValidToken(token)
+        err := crypto.ValidToken(token)
         if err != nil && !errors.Is(err, tt.expectedErr) {
             t.Fatalf("Unexpected error in test %v\nexpected:%v but got:%v", tt.name, tt.expectedErr, err)
         }

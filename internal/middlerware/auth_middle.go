@@ -3,9 +3,7 @@ package middlerware
 import (
 	"log"
 	"net/http"
-	"os"
-
-	"github.com/golang-jwt/jwt/v5"
+    "room-visa/internal/crypto"
 )
 
 func AuthAdminMiddle(next http.Handler ) http.Handler {
@@ -17,7 +15,7 @@ func AuthAdminMiddle(next http.Handler ) http.Handler {
             return 
         }
         
-        err = ValidToken(token)
+        err = crypto.ValidToken(token)
         if err != nil {
             log.Println("Error: ", err)
             http.Error(w, "Access denied", http.StatusUnauthorized)
@@ -39,15 +37,3 @@ func ParseTokenFromCookie(r *http.Request) (string, error){
     return cookie.Value, nil
 }
 
-func keyFunc(token *jwt.Token) (any, error) {
-	return []byte(os.Getenv("ADMIN_AUTH_KEY")), nil
-}
-
-func ValidToken(tokenString string) error {
-	token, err := jwt.Parse(tokenString, keyFunc)
-    if token.Valid {
-        return nil
-    }else {
-        return err
-    }
-}

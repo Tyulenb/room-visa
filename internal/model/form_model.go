@@ -56,6 +56,7 @@ type FormService interface {
     FindFormById(req uuid.UUID) (*Request, error)
     LoadFormPhoto(photoName string) (string, error)
     ChangeFormStatus(uuid.UUID, string) error
+    ValidateVisaToken(token string) error
 }
 
 type FormRepository interface {

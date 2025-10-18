@@ -5,7 +5,7 @@ import (
 	"io"
 	"room-visa/internal/model"
 	"room-visa/internal/storage"
-	"room-visa/internal/transport/utils"
+	"room-visa/internal/crypto"
 	"time"
 
 	"github.com/google/uuid"
@@ -90,7 +90,7 @@ func (fs *FormService) LoadFormPhoto(photoName string) (string, error) {
 }
 
 func (fs *FormService) ChangeFormStatus(id uuid.UUID, status string) error {
-    token, err := utils.GenerateVisaToken(id) 
+    token, err := crypto.GenerateVisaToken(id) 
     if err != nil {
         return err
     }
@@ -100,3 +100,8 @@ func (fs *FormService) ChangeFormStatus(id uuid.UUID, status string) error {
 func (fs *FormService) FindFormById(id uuid.UUID) (*model.Request, error) {
     return fs.fr.SelectRequestById(id)
 }
+
+func (fs *FormService) ValidateVisaToken(tokenString string) error { 
+    return crypto.ValidToken(tokenString)
+}
+

@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"room-visa/internal/middlerware"
 	"room-visa/internal/model"
+	"room-visa/internal/crypto"
 	"room-visa/internal/transport/utils"
 	"time"
 
@@ -32,6 +33,7 @@ func (a *AdminHandler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("POST /addAdmin", a.addAdmin)
     router.Handle("GET /requests", middlerware.AuthAdminMiddle(http.HandlerFunc(a.listRequests)))
     router.Handle("GET /requests/check", middlerware.AuthAdminMiddle(http.HandlerFunc(a.checkRequest)))
+    router.Handle("GET /validate", middlerware.AuthAdminMiddle(http.HandlerFunc(a.validateRequest)))
 }
 
 // Sends admin auth page
@@ -54,7 +56,7 @@ func (a *AdminHandler) authAdmin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := utils.GenerateAuthToken()
+	token, err := crypto.GenerateAuthToken()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
@@ -141,3 +143,16 @@ func (a *AdminHandler) checkRequest(w http.ResponseWriter, r *http.Request) {
     }
 }
 
+func (a *AdminHandler) validateRequest(w http.ResponseWriter, r *http.Request) {
+    values := r.URL.Query()
+    token := values.Get("token") 
+    err := a.fs.ValidateVisaToken(token)
+    if err != nil {
+        fmt.Fprintln(w, "Token is invalid")
+    }else {
+        fmt.Fprintf(w, "Token is valid")
+    }
+    //TO DO valid token in service and return result
+    //if validated than request data and approved message
+    //else rejected message
+}
