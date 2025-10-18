@@ -33,7 +33,7 @@ CREATE TABLE request_data (
 CREATE TABLE visa (
     id UUID PRIMARY KEY,
     request_id UUID NOT NULL UNIQUE,
-    token VARCHAR(255) NOT NULL,
+    token VARCHAR(511) NOT NULL,
     CONSTRAINT fk_request_id 
         FOREIGN KEY(request_id)
         REFERENCES request(id)
