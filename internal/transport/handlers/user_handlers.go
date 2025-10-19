@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"room-visa/internal/model"
+	"strings"
 
 	"github.com/google/uuid"
 )
@@ -77,7 +78,19 @@ func (uh *UserHandler) requestStatus(w http.ResponseWriter, r *http.Request) {
         log.Println(err)
         return
     }
-    fmt.Fprintf(w, "Your request's status is: %s", req.Status)
+
+    if strings.Compare(req.Status, "Approved") == 0 {
+        qr, err := uh.fs.GenerateVisaQR(uid) 
+        if err != nil {
+            fmt.Fprint(w, "Troubles during qr generation")
+            log.Println(err)
+            return
+        }
+        qrhtml := fmt.Sprintf(`<div class="image"><img src="data:image/png;base64,%s" width="200" height="200" alt="lorem"></div>`, qr)
+        fmt.Fprint(w, qrhtml)
+    } else {
+        fmt.Fprintf(w, "Your request's status is: %s", req.Status)
+    }
 }
 
 func (uh *UserHandler) readForm(w http.ResponseWriter, r *http.Request) {

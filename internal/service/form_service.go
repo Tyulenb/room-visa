@@ -1,13 +1,17 @@
 package service
 
 import (
+	"bytes"
 	"encoding/base64"
+	"image/png"
 	"io"
+	"room-visa/internal/crypto"
 	"room-visa/internal/model"
 	"room-visa/internal/storage"
-	"room-visa/internal/crypto"
 	"time"
 
+	"github.com/boombuler/barcode"
+	"github.com/boombuler/barcode/qr"
 	"github.com/google/uuid"
 )
 
@@ -103,5 +107,29 @@ func (fs *FormService) FindFormById(id uuid.UUID) (*model.Request, error) {
 
 func (fs *FormService) ValidateVisaToken(tokenString string) error { 
     return crypto.ValidToken(tokenString)
+}
+
+func (fs *FormService) GenerateVisaQR(id uuid.UUID) (string, error) {
+    visa, err := fs.fr.SelectVisaByRequestId(id)
+    if err != nil {
+        return "", err
+    }
+
+    encodeString := "localhost:3456/validate?token="+visa.Token
+    
+    var buf bytes.Buffer 
+    qrcode, err := qr.Encode(encodeString, qr.L, qr.Auto)
+    if err != nil {
+        return "", err
+    }
+    qrcode, err = barcode.Scale(qrcode, 200, 200)
+    if err != nil {
+        return "", err
+    }
+    if err = png.Encode(&buf, qrcode); err != nil {
+        return "", err
+    }
+    enc := base64.StdEncoding.EncodeToString(buf.Bytes())
+    return enc, nil
 }
 

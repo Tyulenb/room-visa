@@ -99,13 +99,10 @@ func (fr *FormRepository) SelectRequestById(req uuid.UUID) (*model.Request, erro
 
 func (fr *FormRepository) SelectRequestDataByRequest(req uuid.UUID) (*model.RequestData, error) {
     query := `SELECT * FROM request_data WHERE request_id = $1`
-
     row := fr.db.QueryRow(query, req)
-
     if err := row.Err(); err != nil {
         return nil, err
     }
-    
     data := new(model.RequestData)
     err := row.Scan(
         &data.Id, &data.Request_id, &data.Name, &data.Surname,
@@ -115,8 +112,21 @@ func (fr *FormRepository) SelectRequestDataByRequest(req uuid.UUID) (*model.Requ
     if err != nil {
         return nil, err
     }
-
     return data, nil
+}
+
+func (fr *FormRepository) SelectVisaByRequestId(req uuid.UUID) (*model.Visa, error) {
+    query := `SELECT * FROM visa WHERE request_id = $1`
+    row := fr.db.QueryRow(query, req)
+    if err := row.Err(); err != nil {
+        return nil, err
+    }
+    visa := new(model.Visa)
+    err := row.Scan(&visa.Id, &visa.Request_id, &visa.Token)
+    if err != nil {
+        return nil, err
+    }
+    return visa, err
 }
 
 func (fr *FormRepository) UpdateRequestStatus(req uuid.UUID, status, token string) error{

@@ -57,6 +57,7 @@ type FormService interface {
     LoadFormPhoto(photoName string) (string, error)
     ChangeFormStatus(uuid.UUID, string) error
     ValidateVisaToken(token string) error
+    GenerateVisaQR(request_id uuid.UUID) (string, error)
 }
 
 type FormRepository interface {
@@ -66,4 +67,5 @@ type FormRepository interface {
     SelectAwaitingRequests() ([]Request, error)
     SelectRequestDataByRequest(req uuid.UUID) (*RequestData, error)
     UpdateRequestStatus(req uuid.UUID, status, token string) error
+    SelectVisaByRequestId(req uuid.UUID) (*Visa, error)
 }
