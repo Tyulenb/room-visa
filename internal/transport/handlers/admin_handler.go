@@ -104,7 +104,7 @@ func (a *AdminHandler) listRequests(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	fmt.Fprintln(w, `<!doctype html><html><head><meta charset=\"utf-8\"><title>Requests</title><script src="https://unpkg.com/htmx.org@1.9.4"></script></head><body>`)
 
-    tmpl, err := template.ParseFiles("web/request_template.html")
+    tmpl, err := template.ParseFiles("web/template/request_template.html")
     if err != nil {
         http.Error(w, "Something went wrong", http.StatusBadGateway)
         log.Println("ParseFiles:", err)

@@ -3,13 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Room Visa</title>
+    <title>Получение визы в комнату</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #34495e;
+            margin-bottom: 30px;
+            text-align: center;
+            max-width: 600px;
+        }
+
+        form {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #3498db;
+        }
+    </style>
 </head>
 <body>
     <h1>Получение визы в комнату</h1>
     <p>Заполните форму с основной информацией для получения визы. Ваша заявка будет рассмотрена администратором вручную в течение некоторого времени.</p>
     <form action="/form" method="get">
-      <button type="submit">Заполнить форму</button>
+        <button type="submit">Заполнить форму</button>
     </form>
 </body>
 </html>
+

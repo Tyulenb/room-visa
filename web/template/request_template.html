@@ -1,0 +1,99 @@
+<div id="req-{{.Request_id}}" class="request-container">
+  <div class="image">
+      <img src="data:image/*;base64,{{.Photo}}" alt="lorem">
+  </div>
+  <div class="data">
+      <h1>{{.Name}} {{.Surname}}</h1>
+      <ul>
+          <li>Sex: {{.Sex}}</li>
+          <li>Ethnicity: {{.Ethnicity}}</li>
+          <li>Citizenship: {{.Citizenship}}</li>
+          <li>Purpose: {{.Purpose}}</li>
+      </ul>
+  </div>
+  <div class="buttons">
+      <button class="approve-button" hx-get="/requests/check?id={{.Request_id}}&result=Approved"
+              hx-swap="delete"
+              hx-target="#req-{{.Request_id}}">
+          Approve
+      </button>
+      <button class="reject-button" hx-get="/requests/check?id={{.Request_id}}&result=Rejected"
+              hx-swap="delete"
+              hx-target="#req-{{.Request_id}}">
+          Reject 
+      </button>
+  </div>
+</div>
+
+<style>
+  .request-container {
+      display: flex;
+      width: 100%;
+      height: 300px;
+      margin: 15px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+  }
+
+  .image img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px 0 0 8px;
+  }
+
+  .data {
+      padding: 15px;
+      flex: 1;
+  }
+
+  .data h1 {
+      font-size: 1.5em;
+      margin: 0 0 10px;
+      color: #333;
+  }
+
+  .data ul {
+      list-style: none;
+      padding: 0;
+  }
+
+  .data li {
+      margin-bottom: 5px;
+      color: #555;
+  }
+
+  .buttons {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 15px;
+  }
+
+  .buttons button {
+      padding: 10px 15px;
+      margin: 5px 0;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      font-size: 1em;
+      color: #fff;
+  }
+
+  .approve-button {
+      background-color: #4CAF50; /* Green */
+  }
+
+  .reject-button {
+      background-color: #f44336; /* Red */
+  }
+
+  .buttons button:hover {
+      opacity: 0.9;
+  }
+</style>
+
