@@ -6,9 +6,9 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"room-visa/internal/crypto"
 	"room-visa/internal/middlerware"
 	"room-visa/internal/model"
-	"room-visa/internal/crypto"
 	"room-visa/internal/transport/utils"
 	"time"
 
@@ -94,7 +94,7 @@ func (a *AdminHandler) addAdmin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *AdminHandler) listRequests(w http.ResponseWriter, r *http.Request) {
-	data, err := a.fs.GetAwaitingForms()
+	data, err := a.fs.GetAwaitingFormsData()
 	if err != nil {
 		http.Error(w, "Something went wrong", http.StatusBadGateway)
 		log.Println("GetForms:", err)
@@ -146,13 +146,40 @@ func (a *AdminHandler) checkRequest(w http.ResponseWriter, r *http.Request) {
 func (a *AdminHandler) validateRequest(w http.ResponseWriter, r *http.Request) {
     values := r.URL.Query()
     token := values.Get("token") 
-    err := a.fs.ValidateVisaToken(token)
+    visaReqStr, err := a.fs.ValidateVisaToken(token)
     if err != nil {
-        fmt.Fprintln(w, "Token is invalid")
-    }else {
-        fmt.Fprintf(w, "Token is valid")
+        http.Error(w, "Something went wrong", http.StatusBadGateway)
+        log.Println("ValidateVisaToken", err)
+        return
+    }   
+    visaReq, err := uuid.Parse(visaReqStr)
+    if err != nil {
+        http.Error(w, "Something went wrong", http.StatusBadGateway)
+        log.Println("uuidParse:", err)
+        return
     }
-    //TO DO valid token in service and return result
-    //if validated than request data and approved message
-    //else rejected message
+
+    tmpl, err := template.ParseFiles("web/template/validate_template.html")
+    if err != nil {
+        http.Error(w, "Something went wrong", http.StatusBadGateway)
+        log.Println("ParseFiles:", err)
+        return
+    }
+    reqData, err := a.fs.FindFormDataById(visaReq)
+    if err != nil {
+        http.Error(w, "Something went wrong", http.StatusBadGateway)
+        log.Println("FindFormDataById:", err)
+        return
+    }
+    photo, err := a.fs.LoadFormPhoto(reqData.Photo)
+    if err != nil {
+        http.Error(w, "Something went wrong", http.StatusBadGateway)
+        log.Println("FindFormDataById:", err)
+        return
+    }
+    reqData.Photo = photo
+
+	fmt.Fprintln(w, `<!doctype html><html><head><meta charset=\"utf-8\"><title>Validate</title></head><body>`)
+    tmpl.Execute(w, reqData)
+    fmt.Fprintf(w, `</body></html>`)
 }

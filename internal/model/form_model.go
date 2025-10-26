@@ -52,12 +52,13 @@ type Visa struct {
 
 type FormService interface {
 	SaveForm(*Form) error
-    GetAwaitingForms() ([]RequestData, error)
+    GetAwaitingFormsData() ([]RequestData, error)
     FindFormById(req uuid.UUID) (*Request, error)
     LoadFormPhoto(photoName string) (string, error)
     ChangeFormStatus(uuid.UUID, string) error
-    ValidateVisaToken(token string) error
+    ValidateVisaToken(token string) (string, error)
     GenerateVisaQR(request_id uuid.UUID) (string, error)
+    FindFormDataById(request_id uuid.UUID) (*RequestData, error)
 }
 
 type FormRepository interface {
@@ -65,7 +66,7 @@ type FormRepository interface {
     SelectRequests() ([]Request, error)
     SelectRequestById(req uuid.UUID) (*Request, error)
     SelectAwaitingRequests() ([]Request, error)
-    SelectRequestDataByRequest(req uuid.UUID) (*RequestData, error)
+    SelectRequestDataByRequestId(req uuid.UUID) (*RequestData, error)
     UpdateRequestStatus(req uuid.UUID, status, token string) error
     SelectVisaByRequestId(req uuid.UUID) (*Visa, error)
 }

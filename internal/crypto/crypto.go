@@ -46,6 +46,27 @@ func ValidToken(tokenString string) error {
     }
 }
 
+func GetVisaTokenClaimReq(tokenString string) (string, error) {
+	token, err := jwt.Parse(tokenString, keyFunc)
+    if !token.Valid {
+        return "", err 
+    }
+
+    claims, ok := token.Claims.(jwt.MapClaims) 
+    if !ok {
+        return "", fmt.Errorf("Error during parsing claims")
+    }
+    sub, ok := claims["sub"].(string)
+    if !ok || strings.Compare(sub, "visa") != 0 {
+        return "", fmt.Errorf("Unsupported token, sub") 
+    }
+    visaReq, ok := claims["visaReq"].(string)
+    if !ok {
+        return "", fmt.Errorf("Unsupported token, visaReq") 
+    }
+    return visaReq, nil
+}
+
 func keyFunc(token *jwt.Token) (any, error) {
     kid, ok := token.Header["kid"].(string)
     if !ok {

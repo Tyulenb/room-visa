@@ -1,0 +1,74 @@
+<div id="req-{{.Request_id}}" class="request-container">
+  <div class="image">
+      <img src="data:image/*;base64,{{.Photo}}" alt="lorem">
+  </div>
+  <div class="data">
+      <h1>{{.Name}} {{.Surname}}</h1>
+      <ul>
+          <li>Sex: {{.Sex}}</li>
+          <li>Ethnicity: {{.Ethnicity}}</li>
+          <li>Citizenship: {{.Citizenship}}</li>
+          <li>Purpose: {{.Purpose}}</li>
+      </ul>
+  </div>
+  <div class="Approved">
+      Approved
+  </div>
+</div>
+
+<style>
+  .request-container {
+      display: flex;
+      width: 100%;
+      height: 300px;
+      margin: 15px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+  }
+
+  .image img {
+      width: 250px;
+      height: 100%;
+      border-radius: 8px 0 0 8px;
+      object-fit: cover;
+  }
+
+  .data {
+      padding: 15px;
+      flex: 1 1 auto;
+      margin-right: 20px; 
+   }
+
+  .data h1 {
+      font-size: 40px;
+      margin: 0 0 10px;
+      color: #333;
+  }
+
+  .data ul {
+      list-style: none;
+      padding: 0;
+  }
+
+  .data li {
+      margin-bottom: 8px;
+      color: #555;
+      font-size: 18px;      
+      line-height: 1.4;    
+      font-weight: 500;
+  }
+  .Approved {
+      display: inline-block;
+      background: #4CAF50;
+      color: #fff;
+      padding: 0.5em 0.75em;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 1rem;
+  }
+  
+</style>
+

@@ -1,32 +1,17 @@
-<div id="req-{{.Request_id}}" class="request-container">
+<div class="visa-container">
   <div class="image">
       <img src="data:image/*;base64,{{.Photo}}" alt="lorem">
   </div>
   <div class="data">
       <h1>{{.Name}} {{.Surname}}</h1>
-      <ul>
-          <li>Sex: {{.Sex}}</li>
-          <li>Ethnicity: {{.Ethnicity}}</li>
-          <li>Citizenship: {{.Citizenship}}</li>
-          <li>Purpose: {{.Purpose}}</li>
-      </ul>
   </div>
-  <div class="buttons">
-      <button class="approve-button" hx-get="/requests/check?id={{.Request_id}}&result=Approved"
-              hx-swap="delete"
-              hx-target="#req-{{.Request_id}}">
-          Approve
-      </button>
-      <button class="reject-button" hx-get="/requests/check?id={{.Request_id}}&result=Rejected"
-              hx-swap="delete"
-              hx-target="#req-{{.Request_id}}">
-          Reject 
-      </button>
+  <div class="qr">
+      <img src="data:image/*;base64,{{.QR}}" alt="lorem">
   </div>
 </div>
 
 <style>
-  .request-container {
+  .visa-container {
       display: flex;
       width: 100%;
       height: 300px;
@@ -36,12 +21,13 @@
       overflow: hidden;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       background-color: #fff;
+      align-items: center;
   }
 
   .image img {
       width: 250px;
       height: 100%;
-      border-radius: 8px 0 0 8px;
+      border-radius: 8px 8px 8px 8px;
       object-fit: cover;
   }
 
@@ -52,7 +38,7 @@
    }
 
   .data h1 {
-      font-size: 40px;
+      font-size: 30px;
       margin: 0 0 10px;
       color: #333;
   }
@@ -60,14 +46,6 @@
   .data ul {
       list-style: none;
       padding: 0;
-  }
-
-  .data li {
-      margin-bottom: 8px;
-      color: #555;
-      font-size: 18px;      /* увеличить размер текста полей */
-      line-height: 1.4;     /* улучшает читаемость */
-      font-weight: 500;     /* опционально сделать чуть плотнее */
   }
   
   .buttons {
@@ -90,15 +68,22 @@
   }
 
   .approve-button {
-      background-color: #4CAF50; /* Green */
+      background-color: #4CAF50;
   }
 
   .reject-button {
-      background-color: #f44336; /* Red */
+      background-color: #F44336;
   }
 
   .buttons button:hover {
       opacity: 0.9;
   }
-</style>
 
+  .qr img {
+      width: 200px;
+      height: 200px;
+      border-radius: 8px 0 0 8px;
+      object-fit: cover;
+      align: center;
+  }
+</style>

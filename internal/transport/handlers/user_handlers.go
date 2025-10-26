@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -86,8 +87,34 @@ func (uh *UserHandler) requestStatus(w http.ResponseWriter, r *http.Request) {
             log.Println(err)
             return
         }
-        qrhtml := fmt.Sprintf(`<div class="image"><img src="data:image/png;base64,%s" width="200" height="200" alt="lorem"></div>`, qr)
-        fmt.Fprint(w, qrhtml)
+
+        requestData, err := uh.fs.FindFormDataById(uid)
+        if err != nil {
+            http.Error(w, "Something went wrong", http.StatusBadGateway)
+            log.Println("ParseFiles:", err)
+            return
+        }
+
+        photo, err := uh.fs.LoadFormPhoto(requestData.Photo)
+        if err != nil {
+            http.Error(w, "Something went wrong", http.StatusBadGateway)
+            log.Println("ParseFiles:", err)
+            return
+        }
+
+        tmpl, err := template.ParseFiles("web/template/visa_template.html")
+        if err != nil {
+            http.Error(w, "Something went wrong", http.StatusBadGateway)
+            log.Println("ParseFiles:", err)
+            return
+        }
+        templData := map[string]string {
+            "Name": requestData.Name,
+            "Surname": requestData.Surname,
+            "Photo": photo,
+            "QR": qr,
+        }
+        tmpl.Execute(w, templData)
     } else {
         fmt.Fprintf(w, "Your request's status is: %s", req.Status)
     }

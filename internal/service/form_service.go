@@ -58,7 +58,7 @@ func (fs *FormService) SaveForm(form *model.Form) error {
 }
 
 //Returns all forms that need to be checked
-func (fs *FormService) GetAwaitingForms() ([]model.RequestData, error) {
+func (fs *FormService) GetAwaitingFormsData() ([]model.RequestData, error) {
     requests, err := fs.fr.SelectAwaitingRequests()
     if err != nil {
         return nil, err
@@ -67,13 +67,17 @@ func (fs *FormService) GetAwaitingForms() ([]model.RequestData, error) {
     requestData := make([]model.RequestData, 0)
 
     for _, r := range requests{
-        data, err := fs.fr.SelectRequestDataByRequest(r.Id)
+        data, err := fs.fr.SelectRequestDataByRequestId(r.Id)
         if err != nil {
             return nil, err
         }
         requestData = append(requestData, *data) 
     }
     return requestData, nil
+}
+
+func (fs *FormService) FindFormDataById(req uuid.UUID) (*model.RequestData, error) {
+    return fs.fr.SelectRequestDataByRequestId(req)
 }
 
 //Loads photo from storage
@@ -105,8 +109,8 @@ func (fs *FormService) FindFormById(id uuid.UUID) (*model.Request, error) {
     return fs.fr.SelectRequestById(id)
 }
 
-func (fs *FormService) ValidateVisaToken(tokenString string) error { 
-    return crypto.ValidToken(tokenString)
+func (fs *FormService) ValidateVisaToken(tokenString string) (string, error) { 
+    return crypto.GetVisaTokenClaimReq(tokenString)
 }
 
 func (fs *FormService) GenerateVisaQR(id uuid.UUID) (string, error) {
