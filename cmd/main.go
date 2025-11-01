@@ -32,7 +32,9 @@ func main() {
     storagePath := os.Getenv("STORAGE")
     store := storage.NewPhotoStorage(storagePath)
 
-	app := app.NewApp(":3456", db, store)
+    addr := os.Getenv("PORT")
+
+	app := app.NewApp(addr, db, store)
 	app.Run()
 }
 

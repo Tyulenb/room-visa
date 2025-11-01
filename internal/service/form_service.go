@@ -5,6 +5,8 @@ import (
 	"encoding/base64"
 	"image/png"
 	"io"
+	"log"
+	"os"
 	"room-visa/internal/crypto"
 	"room-visa/internal/model"
 	"room-visa/internal/storage"
@@ -119,7 +121,10 @@ func (fs *FormService) GenerateVisaQR(id uuid.UUID) (string, error) {
         return "", err
     }
 
-    encodeString := "localhost:3456/validate?token="+visa.Token
+    domain := os.Getenv("DOMAIN")
+    port := os.Getenv("PORT")
+    encodeString := domain+port+"/validate?token="+visa.Token
+    log.Println(encodeString)
     
     var buf bytes.Buffer 
     qrcode, err := qr.Encode(encodeString, qr.L, qr.Auto)
