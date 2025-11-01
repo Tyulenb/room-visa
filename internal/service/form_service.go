@@ -28,7 +28,7 @@ func NewFormService(fr model.FormRepository, st storage.Storage) *FormService {
 }
 
 //Saves forms to database and profile photo to storage
-func (fs *FormService) SaveForm(form *model.Form) error {
+func (fs *FormService) SaveForm(form *model.Form) (string, error) {
 	photoName := uuid.NewString()
 	fs.st.Save(photoName, form.Photo)
 	defer form.Photo.Close()
@@ -54,7 +54,7 @@ func (fs *FormService) SaveForm(form *model.Form) error {
 		Photo:       photoName,
 	}
 
-	return fs.fr.InsertForm(request, data)
+	return requestUUID.String(), fs.fr.InsertForm(request, data)
 }
 
 //Returns all forms that need to be checked

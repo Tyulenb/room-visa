@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Форма для визы</title>
+    <script src="https://unpkg.com/htmx.org@1.9.4"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -52,34 +53,36 @@
     </style>
 </head>
 <body>
-    <h1>Форма для визы</h1>
-    <form action="/form" method="post" enctype="multipart/form-data">
-        <label for="name">Имя:</label>
-        <input type="text" id="name" name="name" required>
+    <div id="visa-form">
+        <h1>Форма для визы</h1>
+        <form hx-post="/form" hx-swap="outerHTML" hx-target="#visa-form" enctype="multipart/form-data">
+            <label for="name">Имя:</label>
+            <input type="text" id="name" name="name" required>
 
-        <label for="surname">Фамилия:</label>
-        <input type="text" id="surname" name="surname" required>
+            <label for="surname">Фамилия:</label>
+            <input type="text" id="surname" name="surname" required>
 
-        <label for="sex">Пол</label>
-        <select id="sex" name="sex">
-            <option value="male">Мужчина</option>
-            <option value="female">Женщина</option>
-        </select>
+            <label for="sex">Пол</label>
+            <select id="sex" name="sex">
+                <option value="male">Мужчина</option>
+                <option value="female">Женщина</option>
+            </select>
 
-        <label for="ethnicity">Этничность</label>
-        <input type="text" id="ethnicity" name="ethnicity" required>
+            <label for="ethnicity">Этничность</label>
+            <input type="text" id="ethnicity" name="ethnicity" required>
 
-        <label for="citizenship">Гражданство</label>
-        <input type="text" id="citizenship" name="citizenship" required>
+            <label for="citizenship">Гражданство</label>
+            <input type="text" id="citizenship" name="citizenship" required>
 
-        <label for="purpose">Цель визита</label>
-        <input type="text" id="purpose" name="purpose" required>
+            <label for="purpose">Цель визита</label>
+            <input type="text" id="purpose" name="purpose" required>
 
-        <label for="photo">Фотография лица</label>
-        <input type="file" id="photo" name="photo" accept=".jpg, .jpeg, .png" required>
+            <label for="photo">Фотография лица</label>
+            <input type="file" id="photo" name="photo" accept=".jpg, .jpeg, .png" required>
 
-        <button type="submit">Отправить</button>
-    </form>
+            <button type="submit">Отправить</button>
+        </form>
+    </div>
 </body>
 </html>
 

@@ -51,7 +51,8 @@ type Visa struct {
 }
 
 type FormService interface {
-	SaveForm(*Form) error
+    //uuid of form and error
+	SaveForm(*Form) (string, error)     
     GetAwaitingFormsData() ([]RequestData, error)
     FindFormById(req uuid.UUID) (*Request, error)
     LoadFormPhoto(photoName string) (string, error)

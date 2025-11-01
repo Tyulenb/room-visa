@@ -129,8 +129,9 @@ func (uh *UserHandler) readForm(w http.ResponseWriter, r *http.Request) {
 
     photo, _, err := r.FormFile("photo")
     if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+        http.Error(w, "Something went wrong", http.StatusBadGateway)
+        log.Println("FormFile:", err)
+        return
     } 
 
     form := &model.Form{
@@ -143,10 +144,18 @@ func (uh *UserHandler) readForm(w http.ResponseWriter, r *http.Request) {
         Photo: photo,
     }
 
-    err = uh.fs.SaveForm(form)
+    uuid, err := uh.fs.SaveForm(form)
     if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+        http.Error(w, "Something went wrong", http.StatusBadGateway)
+        log.Println("SaveForm:", err)
+        return
     }
-    http.Redirect(w, r, "/", http.StatusSeeOther)
+    tmpl, err := template.ParseFiles("web/template/form_response_template.html")
+    if err != nil {
+        http.Error(w, "Something went wrong", http.StatusBadGateway)
+        log.Println("template.ParseFiles:", err)
+        return
+    }
+    tmplData := map[string]string{"UUID":uuid}
+    tmpl.Execute(w, tmplData)
 }
