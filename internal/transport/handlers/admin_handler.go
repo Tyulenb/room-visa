@@ -52,13 +52,15 @@ func (a *AdminHandler) authAdmin(w http.ResponseWriter, r *http.Request) {
 
 	err := a.as.CheckPassword(login, password)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadGateway)
+		http.Error(w, "Login or Password is wrong", http.StatusBadGateway)
+        log.Printf("authAdmin: %v\n", err.Error())
 		return
 	}
 
 	token, err := crypto.GenerateAuthToken()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadGateway)
+		http.Error(w, "Something went wrong, try again later", http.StatusBadGateway)
+        log.Printf("authAdmin: %v\n", err.Error())
 		return
 	}
 
