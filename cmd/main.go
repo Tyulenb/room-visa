@@ -35,7 +35,7 @@ func main() {
     addr := os.Getenv("PORT")
 
 	app := app.NewApp(addr, db, store)
-	app.Run()
+	log.Println(app.Run())
 }
 
 func dbPing(db *sql.DB) error {
